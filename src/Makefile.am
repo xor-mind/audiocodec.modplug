@@ -1,0 +1,4 @@
+lib_LTLIBRARIES=audiocodec_modplug.la
+
+audiocodec_modplug_la_SOURCES=modplug.cpp
+audiocodec_modplug_la_LDFLAGS=-module -avoid-version
