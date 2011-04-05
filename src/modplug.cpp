@@ -31,7 +31,7 @@ extern "C"
 #ifdef __linux__
 #include <libmodplug/modplug.h>
 #else
-#include "lib/libmodplug/src/modplug.h"
+#include "src/modplug.h"
 #endif
 
 
