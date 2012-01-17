@@ -38,16 +38,16 @@ extern "C"
 //-- Create -------------------------------------------------------------------
 // Called on load. Addon should fully initalize or return error status
 //-----------------------------------------------------------------------------
-ADDON_STATUS Create(void* hdl, void* props)
+ADDON_STATUS ADDON_Create(void* hdl, void* props)
 {
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 //-- Stop ---------------------------------------------------------------------
 // This dll must cease all runtime activities
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-void Stop()
+void ADDON_Stop()
 {
 }
 
@@ -55,7 +55,7 @@ void Stop()
 // Do everything before unload of this add-on
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-void Destroy()
+void ADDON_Destroy()
 {
 }
 
@@ -63,7 +63,7 @@ void Destroy()
 // Returns true if this add-on use settings
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-bool HasSettings()
+bool ADDON_HasSettings()
 {
   return false;
 }
@@ -72,16 +72,16 @@ bool HasSettings()
 // Returns the current Status of this visualisation
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-ADDON_STATUS GetStatus()
+ADDON_STATUS ADDON_GetStatus()
 {
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 //-- GetSettings --------------------------------------------------------------
 // Return the settings for XBMC to display
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-unsigned int GetSettings(StructSetting ***sSet)
+unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 {
   return 0;
 }
@@ -91,7 +91,7 @@ unsigned int GetSettings(StructSetting ***sSet)
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
 
-void FreeSettings()
+void ADDON_FreeSettings()
 {
 }
 
@@ -99,24 +99,24 @@ void FreeSettings()
 // Set a specific Setting value (called from XBMC)
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-ADDON_STATUS SetSetting(const char *strSetting, const void* value)
+ADDON_STATUS ADDON_SetSetting(const char *strSetting, const void* value)
 {
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
-AC_INFO* Init(const char* strFile, int track)
+AC_INFO* Init(const char* strFile, int track, VFSFile* fs)
 {
   // Read our file to memory so it can be passed to ModPlug_Load()
-  FILE* file;
-  if (!(file = fopen(strFile,"rb")))
+  void* file;
+  if (!(file = fs->fopen(strFile,"rb")))
     return NULL;
-  fseek(file,0,SEEK_END);
-  int64_t pos = ftell(file);
-  fseek(file,0,SEEK_SET);
+  fs->fseek(file,0,SEEK_END);
+  int64_t pos = fs->ftell(file);
+  fs->fseek(file,0,SEEK_SET);
 
   char *data = new char[pos];
-  fread(data,pos,1,file);
-  fclose(file);
+  fs->fread(data,pos,1,file);
+  fs->fclose(file);
 
   // Now load the module
   AC_INFO* info = new AC_INFO;
@@ -160,7 +160,7 @@ int ReadPCM(AC_INFO* info, void* pBuffer, unsigned int size, unsigned int *actua
   return READ_ERROR;
 }
 
-int GetNumberOfTracks(const char* strFile)
+int GetNumberOfTracks(const char* strFile, VFSFile* file)
 {
   return 1;
 }
